@@ -8,12 +8,29 @@ const server = http.createServer((request, response) => {
 
     debuglog(method)
 
+    /**
+     * Data event'ı dinlenerek request ile gelen veri alınmıstır
+     */
     let body = ''
     request.on('data', chunk => {
         body += chunk
     })
     
     .on('end', () => {
+        /**
+        * Veri alımı bittikten sonra OPTIONS metodları ile POST, GET gibi
+        * standart metodlar ayrılmıstır.
+        *
+        * CORS: Cross Origin Resource Sharing. CORS farkli domainlerden
+        * request almamızı sağlar ancak bunun için Google Chrome, header'ları kontrol
+        * etmek amacıyla OPTIONS metoduyla bir request gönderir
+        * 
+        * Burada OPTIONS metodlarına standart header'lar ile 200 statusunda bir
+        * response gönderiliyor. Ve diger metodlar icin lib dizininde requests icerisinde
+        * yazdığımm req fonksiyonunda islemler yapılıyor. Bu fonksyon async bir fonksiyon
+        * ve bu yuzden Promise döndürüyor
+        */
+
         switch (method) {
             default:
                 req(body,method).then(res => {
